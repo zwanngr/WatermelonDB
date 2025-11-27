@@ -30,3 +30,4 @@ msbuild.binlog
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+examples/harmony/har/

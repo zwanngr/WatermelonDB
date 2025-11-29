@@ -1,4 +1,4 @@
-import { Model, Q, Query, Relation } from '@react-native-ohos/watermelondb/src';
+import { Model, Q, Query, Relation } from '@react-native-ohos/watermelondb';
 import {
   action,
   children,
@@ -6,8 +6,8 @@ import {
   lazy,
   relation,
   text,
-} from '@react-native-ohos/watermelondb/src/decorators';
-import { Associations } from '@react-native-ohos/watermelondb/src/Model';
+} from '@react-native-ohos/watermelondb/decorators';
+import { Associations } from '@react-native-ohos/watermelondb/Model';
 import { TableName } from './constants';
 
 export class Blog extends Model {

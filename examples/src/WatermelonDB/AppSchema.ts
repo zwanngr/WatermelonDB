@@ -1,4 +1,4 @@
-import { appSchema, tableSchema } from "@react-native-ohos/watermelondb/src"
+import { appSchema, tableSchema } from "@react-native-ohos/watermelondb"
 import { TableName } from "./constants"
 
 export const AppSchema = appSchema({

@@ -1,9 +1,10 @@
-import { TurboModuleRegistry, TurboModule } from "react-native";
-
+import { TurboModuleRegistry, TurboModule } from 'react-native'
 
 export interface Spec extends TurboModule {
-  install?: () => void,
-};
+  install?: () => void
+}
 
-export default TurboModuleRegistry.getEnforcing<Spec>("WMDatabaseJSIBridge");
+const module = TurboModuleRegistry.get<Spec>('WMDatabaseJSIBridge') || null
+
+export default module
 

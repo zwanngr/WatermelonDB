@@ -8,9 +8,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Database} from '@react-native-ohos/watermelondb'; // 使用命名导入时 instanceof 检查可能失败
-import SQLiteAdapter from '@react-native-ohos/watermelondb/adapters/sqlite';
-import { DatabaseProvider, useDatabase } from '@react-native-ohos/watermelondb/react';
+import { Database } from '@nozbe/watermelondb';
+import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
+import { DatabaseProvider, useDatabase } from '@nozbe/watermelondb/react';
 import { mySchema } from './models/schema';
 import { dbModels } from './models/index.js';
 
@@ -154,7 +154,6 @@ const MovieScreen = () => {
       'color: #0e93e0;background: #aaefe5;',
       moviesCollection,
     );
-    console.log('%c watermelondbConsoleLogger moviesCollection.query:', 'color: #0e93e0;background: #aaefe5;', moviesCollection.query());
     const current = await moviesCollection.query().fetch();
     console.log(
       '%c watermelondbConsoleLogger current:',
@@ -261,7 +260,7 @@ const MovieScreen = () => {
 };
 
 export default function WatermelonDemo() {
-  console.log('%c watermelondbConsoleLogger database:', 'color: #0e93e0;background: #aaefe5;', database);
+  console.log('%c watermelondbConsoleLogger WatermelonDemo:', 'color: #0e93e0;background: #aaefe5;', 'WatermelonDemo');
   return (
     <DatabaseProvider database={database}>
       <MovieScreen />

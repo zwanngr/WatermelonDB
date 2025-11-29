@@ -20,7 +20,9 @@ add_subdirectory("${RNOH_CPP_DIR}" ./rn)
 # RNOH_END: manual_package_linking_1
 
 file(GLOB GENERATED_CPP_FILES "${CMAKE_CURRENT_SOURCE_DIR}/generated/*.cpp") # this line is needed by codegen v1
+
 add_subdirectory("${OH_MODULES}/@react-native-ohos/watermelondb/src/main/cpp" ./watermelondb)
+
 
 
 add_library(rnoh_app SHARED

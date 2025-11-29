@@ -9,13 +9,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
-import com.reactnativepagerview.PagerViewPackage;
-import com.swmansion.gesturehandler.RNGestureHandlerPackage;
-//import com.reactnativepagerview.PagerViewPackage;
-// react-native-wechat-lib support (
-//import com.imagepicker.ImagePickerPackage;
-//import com.wechatlib.WeChatLibPackage;
-// )
+import com.nozbe.watermelondb.WatermelonDBPackage;
 
 import java.util.List;
 
@@ -33,12 +27,8 @@ public class MainApplication extends Application implements ReactApplication {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
-          // packages.add(new MyReactNativePackage());
-//            packages.add(new WeChatLibPackage());
-//            packages.add(new ImagePickerPackage());
-//            packages.add(new PagerViewPackage());
-            packages.add(new RNGestureHandlerPackage());
-            packages.add(new PagerViewPackage());
+//          packages.add(new WatermelonDBPackage());
+
           return packages;
         }
 

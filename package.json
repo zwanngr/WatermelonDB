@@ -1,16 +1,17 @@
 {
   "name": "@react-native-ohos/watermelondb",
   "description": "Build powerful React Native and React web apps that scale from hundreds to tens of thousands of records and remain fast",
-  "version": "0.28.1-0",
+  "version": "0.28.1-test-5",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
     "up": "yarn",
-    "build": "NODE_ENV=production node ./scripts/make.mjs",
-    "dev": "NODE_ENV=development node ./scripts/make.mjs",
+    "build": "node ./scripts/make.mjs",
+    "dev": "node ./scripts/make.mjs",
     "dev:native": "react-native start",
     "release": "node ./scripts/release.mjs",
+    "pack": "node ./scripts/make.mjs && cd dist && npm pack",
     "prettier": "prettier --write src docs-website/src",
     "flow": "flow check --color always",
     "eslint": "eslint ./src -c ./.eslintrc.js --cache --cache-location ./.cache/.eslintcache",

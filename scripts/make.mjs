@@ -31,16 +31,14 @@ import pkg from './pkg.cjs'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const resolvePath = (...paths) => path.resolve(__dirname, '..', ...paths)
-const isDevelopment = process.env.NODE_ENV === 'development'
 
 const SRC_MODULES = 'src'
 const CJS_MODULES = 'cjs'
 
 const SOURCE_PATH = resolvePath('src')
 const DIST_PATH = resolvePath('dist')
-const DEV_PATH = process.env.DEV_PATH || resolvePath('dev')
 
-const DIR_PATH = isDevelopment ? DEV_PATH : DIST_PATH
+const DIR_PATH = DIST_PATH
 
 const DO_NOT_BUILD_PATHS = [
   /__tests__/,
@@ -60,8 +58,6 @@ const cleanFolder = (dir) => rimraf.sync(dir)
 const takeFiles = pipe(prop('path'), both(endsWith('.js'), isNotIncludedInBuildPaths))
 
 const takeModules = pipe(filter(takeFiles), map(prop('path')))
-
-const removeSourcePath = replace(SOURCE_PATH, '')
 
 const createModulePath = (format) => {
   const formatPathSegment = format === CJS_MODULES ? [] : [format]
@@ -115,19 +111,26 @@ const copyFiles = (dir, files, rm = resolvePath()) =>
 
 const copyNonJavaScriptFiles = (buildPath) => {
   createPackageJson(buildPath, pkg)
+  console.log('%c watermelondbConsoleLogger buildPath:', 'color: #0e93e0;background: #aaefe5;', buildPath);
   copyFiles(buildPath, [
     'LICENSE',
     // 'README.md',
-    'yarn.lock',
+    // 'yarn.lock',
     'WatermelonDB.podspec',
     'react-native.config.js', // NOTE: this is needed for autolinking
     // 'docs',
     'native/shared',
-    'native/ios',
-    'native/android',
-    'native/android-jsi',
-    'native/windows',
+    'harmony',
+    'src/specs'
   ])
+  
+  // Copy specs folder to root directory as well
+  const specsSourcePath = resolvePath('src/specs')
+  const specsDestPath = path.join(buildPath, 'specs')
+  if (fs.existsSync(specsSourcePath)) {
+    fs.copySync(specsSourcePath, specsDestPath)
+  }
+  
   cleanFolder(`${buildPath}/native/ios/WatermelonDB.xcodeproj/xcuserdata`)
   cleanFolder(`${buildPath}/native/android/build`)
   cleanFolder(`${buildPath}/native/android/bin/build`)
@@ -142,69 +145,35 @@ const copyNonJavaScriptFiles = (buildPath) => {
   cleanFolder(`${buildPath}/native/windows/WatermelonDB/x64`)
 }
 
-if (isDevelopment) {
-  const buildCjsModule = buildModule(CJS_MODULES)
-  const buildSrcModule = buildModule(SRC_MODULES)
+const buildModules = (format) => mapAsync(buildModule(format))
+const buildCjsModules = buildModules(CJS_MODULES)
+const buildSrcModules = buildModules(SRC_MODULES)
 
-  const buildFile = (file) => {
-    if (file.match(/\.js$/)) {
-      buildSrcModule(file)
-      buildCjsModule(file)
-    } else if (file.match(/\.d.ts$/)) {
-      // Typescript
-      fs.copySync(file, path.join(DEV_PATH, replace(SOURCE_PATH, '', file)))
-    } else {
-      // native files
-      fs.copySync(file, path.join(DEV_PATH, replace(resolvePath(), '', file)))
-    }
+console.log('111')
+cleanFolder(DIST_PATH)
+console.log('222')
+createFolder(DIST_PATH)
+console.log('333')
+copyNonJavaScriptFiles(DIST_PATH)
+console.log('444')
+
+buildSrcModules(modules)
+console.log('555')
+buildCjsModules(modules)
+console.log('666')
+
+// copy typescript definitions
+glob(`${SOURCE_PATH}/**/*.d.ts`, {}, (err, files) => {
+  if (err) {
+    console.error('Error globbing TypeScript definition files:', err)
+    return
   }
-
-  cleanFolder(DEV_PATH)
-  createFolder(DEV_PATH)
-  copyNonJavaScriptFiles(DEV_PATH)
-
-  chokidar
-    .watch(
-      [
-        resolvePath('src'),
-        resolvePath('native/ios/WatermelonDB'),
-        resolvePath('native/shared'),
-        resolvePath('native/android/src/main'),
-        resolvePath('native/android-jsi/src/main'),
-      ],
-      {
-        ignored: DO_NOT_BUILD_PATHS,
-      },
-    )
-    .on('all', (event, fileOrDir) => {
-      // eslint-disable-next-line
-      switch (event) {
-        case 'add':
-        case 'change':
-          // eslint-disable-next-line
-          console.log(`✓ ${removeSourcePath(fileOrDir)}`)
-          buildFile(fileOrDir)
-          break
-        default:
-          break
-      }
-    })
-} else {
-  const buildModules = (format) => mapAsync(buildModule(format))
-  const buildCjsModules = buildModules(CJS_MODULES)
-  const buildSrcModules = buildModules(SRC_MODULES)
-
-  cleanFolder(DIST_PATH)
-  createFolder(DIST_PATH)
-  copyNonJavaScriptFiles(DIST_PATH)
-
-  buildSrcModules(modules)
-  buildCjsModules(modules)
-
-  // copy typescript definitions
-  glob(`${SOURCE_PATH}/**/*.d.ts`, {}, (err, files) => {
-    files.forEach((file) => {
-      fs.copySync(file, path.join(DIST_PATH, replace(SOURCE_PATH, '', file)))
-    })
+  files.forEach((file) => {
+    // Calculate relative path from SOURCE_PATH to file
+    const relativePath = path.relative(SOURCE_PATH, file)
+    const destPath = path.join(DIST_PATH, relativePath)
+    // Ensure destination directory exists
+    createFolder(path.dirname(destPath))
+    fs.copySync(file, destPath)
   })
-}
+})

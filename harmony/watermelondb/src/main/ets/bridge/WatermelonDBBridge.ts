@@ -35,31 +35,29 @@ export class WatermelonDBBridge extends TurboModule {
     schemaVersion: number,
     unsafeNativeReuse: boolean
   ): Promise<InitializeResult> {
-    // if (this.connections.has(tag)) {
-    //   throw new Error(`A driver with tag ${tag} already set up`);
-    // }
+    if (this.connections.has(tag)) {
+      throw new Error(`A driver with tag ${tag} already set up`);
+    }
 
-    // try {
-    //   const driver = await WMDatabaseDriver.createWithSchemaVersion(
-    //     this.createDriverContext(databaseName, unsafeNativeReuse),
-    //     schemaVersion
-    //   );
-    //   await this.connectDriver(tag, driver);
-    //   return { code: 'ok' };
-    // } catch (error) {
-    //   if (error instanceof Error && error.name === 'SchemaNeededError') {
-    //     this.connections.set(tag, { type: 'waiting', queue: [] });
-    //     return { code: 'schema_needed' };
-    //   }
-    //   if (error instanceof Error && error.name === 'MigrationNeededError') {
-    //     this.connections.set(tag, { type: 'waiting', queue: [] });
-    //     const migrationError = error as { databaseVersion?: number };
-    //     return { code: 'migrations_needed', databaseVersion: migrationError.databaseVersion ?? 0 };
-    //   }
-    //   throw error;
-    // }
-    console.log('watermelondbConsoleLogger initialize:');
-    return { code: 'ok' };
+    try {
+      const driver = await WMDatabaseDriver.createWithSchemaVersion(
+        this.createDriverContext(databaseName, unsafeNativeReuse),
+        schemaVersion
+      );
+      await this.connectDriver(tag, driver);
+      return { code: 'ok' };
+    } catch (error) {
+      if (error instanceof Error && error.name === 'SchemaNeededError') {
+        this.connections.set(tag, { type: 'waiting', queue: [] });
+        return { code: 'schema_needed' };
+      }
+      if (error instanceof Error && error.name === 'MigrationNeededError') {
+        this.connections.set(tag, { type: 'waiting', queue: [] });
+        const migrationError = error as { databaseVersion?: number };
+        return { code: 'migrations_needed', databaseVersion: migrationError.databaseVersion ?? 0 };
+      }
+      throw error;
+    }
   }
 
   async setUpWithSchema(
@@ -69,14 +67,13 @@ export class WatermelonDBBridge extends TurboModule {
     schemaVersion: number,
     unsafeNativeReuse: boolean
   ): Promise<boolean> {
-    // const driver = await WMDatabaseDriver.createWithSchema(
-    //   this.createDriverContext(databaseName, unsafeNativeReuse),
-    //   new Schema(schemaVersion, schema)
-    // );
-    // await this.connectDriver(tag, driver);
-    // return true;
     console.log('watermelondbConsoleLogger setUpWithSchema:');
-    return false;
+    const driver = await WMDatabaseDriver.createWithSchema(
+      this.createDriverContext(databaseName, unsafeNativeReuse),
+      new Schema(schemaVersion, schema)
+    );
+    await this.connectDriver(tag, driver);
+    return true;
   }
 
   async setUpWithMigrations(
@@ -87,172 +84,148 @@ export class WatermelonDBBridge extends TurboModule {
     toVersion: number,
     unsafeNativeReuse: boolean
   ): Promise<boolean> {
-      // const driver = await WMDatabaseDriver.createWithMigrations(
-      //   this.createDriverContext(databaseName, unsafeNativeReuse),
-      //   new MigrationSet(fromVersion, toVersion, migrations)
-      // );
-      // await this.connectDriver(tag, driver);
-      // return true;
-      console.log('watermelondbConsoleLogger setUpWithMigrations:');
-      return false;
+      const driver = await WMDatabaseDriver.createWithMigrations(
+        this.createDriverContext(databaseName, unsafeNativeReuse),
+        new MigrationSet(fromVersion, toVersion, migrations)
+      );
+      await this.connectDriver(tag, driver);
+      return true;
   }
 
   async find(tag: number, table: string, id: string): Promise<unknown> {
-    // return this.withDriver(tag, 'find', (driver) => driver.find(table, id));
     console.log('watermelondbConsoleLogger find:');
-    return null;
+    return this.withDriver(tag, 'find', (driver) => driver.find(table, id));
   }
 
   async query(tag: number, table: string, query: string, args: unknown[]): Promise<unknown> {
-    // return this.withDriver(tag, 'query', (driver) => driver.cachedQuery(table, query, args as any));
     console.log('watermelondbConsoleLogger query:');
-    return null;
+    return this.withDriver(tag, 'query', (driver) => driver.cachedQuery(table, query, args as any));
   }
 
   async queryIds(tag: number, query: string, args: unknown[]): Promise<string[]> {
-    // return this.withDriver(tag, 'queryIds', (driver) => driver.queryIds(query, args as any));
     console.log('watermelondbConsoleLogger queryIds:');
-    return [];
+    return this.withDriver(tag, 'queryIds', (driver) => driver.queryIds(query, args as any));
   }
 
   async unsafeQueryRaw(tag: number, query: string, args: unknown[]): Promise<unknown[]> {
-    // return this.withDriver(tag, 'unsafeQueryRaw', (driver) => driver.unsafeQueryRaw(query, args as any));
     console.log('watermelondbConsoleLogger unsafeQueryRaw:');
-    return [];
+    return this.withDriver(tag, 'unsafeQueryRaw', (driver) => driver.unsafeQueryRaw(query, args as any));
   }
 
   async count(tag: number, query: string, args: unknown[]): Promise<number> {
-    // return this.withDriver(tag, 'count', (driver) => driver.count(query, args as any));
     console.log('watermelondbConsoleLogger count:');
-    return 0;
+    return this.withDriver(tag, 'count', (driver) => driver.count(query, args as any));
   }
 
   async batch(tag: number, operations: Array<[number, string, string, unknown[][]]>): Promise<boolean> {
-    // await this.withDriver(tag, 'batch', (driver) => driver.batch(operations as any));
     console.log('watermelondbConsoleLogger batch:');
+    await this.withDriver(tag, 'batch', (driver) => driver.batch(operations as any));
     return true;
   }
 
   async unsafeResetDatabase(tag: number, schema: string, schemaVersion: number): Promise<void> {
-    // return this.withDriver(tag, 'unsafeResetDatabase', (driver) =>
-    //   driver.unsafeResetDatabase(new Schema(schemaVersion, schema))
-    // );
     console.log('watermelondbConsoleLogger unsafeResetDatabase:');
-    return;
+    return this.withDriver(tag, 'unsafeResetDatabase', (driver) =>
+      driver.unsafeResetDatabase(new Schema(schemaVersion, schema))
+    );
   }
 
   async getLocal(tag: number, key: string): Promise<string | null> {
-    // return this.withDriver(tag, 'getLocal', (driver) => driver.getLocal(key));
     console.log('watermelondbConsoleLogger getLocal:');
-    return null;
+    return this.withDriver(tag, 'getLocal', (driver) => driver.getLocal(key));
   }
 
   unsafeGetLocalSynchronously(tag: number, key: string): [string, string | null] {
-    // const connection = this.connections.get(tag);
-    // if (!connection || connection.type !== 'connected') {
-    //   return ['error', `No driver with tag ${tag} available`];
-    // }
-    // return ['result', connection.driver.getLocalFromCache(key)];
     console.log('watermelondbConsoleLogger unsafeGetLocalSynchronously:');
     return ['result', null];
   }
 
   async provideSyncJson(id: number, json: string): Promise<boolean> {
-    // const runtime: any = globalThis;
-    // const watermelonJSI = runtime?.WatermelonJSI ?? runtime?.__WatermelonJSI;
-    // if (watermelonJSI?.provideSyncJson) {
-    //   await watermelonJSI.provideSyncJson(id, json);
-    //   return true;
-    // }
-    // throw new Error('WatermelonJSI not available on Harmony');
     console.log('watermelondbConsoleLogger provideSyncJson:');
-    return false;
+    const runtime: any = globalThis;
+    const watermelonJSI = runtime?.WatermelonJSI ?? runtime?.__WatermelonJSI;
+    if (watermelonJSI?.provideSyncJson) {
+      await watermelonJSI.provideSyncJson(id, json);
+      return true;
+    }
+    throw new Error('WatermelonJSI not available on Harmony');
   }
 
   getRandomBytes(count: number): number[] {
-    // if (count !== 256) {
-    //   throw new Error('Expected getRandomBytes to be called with 256');
-    // }
-    // const random = cryptoFramework.createRandom();
-    // const buffer = new ArrayBuffer(count);
-    // random.generateRandom(buffer);
-    // const view = new Uint8Array(buffer);
-    // return Array.from(view);
     console.log('watermelondbConsoleLogger getRandomBytes:');
-    return [];
+    if (count !== 256) {
+      throw new Error('Expected getRandomBytes to be called with 256');
+    }
+    const random = cryptoFramework.createRandom();
+    const randomValues = random.generateRandom(count);
+    // todo
+    return Array.from([]);
   }
 
   invalidate(): void {
     console.log('watermelondbConsoleLogger invalidate:');
     // super.invalidate();
-    // this.connections.clear();
-    // const runtime: any = globalThis;
-    // const watermelonJSI = runtime?.WatermelonJSI ?? runtime?.__WatermelonJSI;
-    // if (watermelonJSI?.onCatalystInstanceDestroy) {
-    //   try {
-    //     watermelonJSI.onCatalystInstanceDestroy();
-    //   } catch (error) {
-    //     hilog.info(0x0000, 'WatermelonDBBridge', `JSI destroy failed: ${error}`);
-    //   }
-    // }
+    this.connections.clear();
+    const runtime: any = globalThis;
+    const watermelonJSI = runtime?.WatermelonJSI ?? runtime?.__WatermelonJSI;
+    if (watermelonJSI?.onCatalystInstanceDestroy) {
+      try {
+        watermelonJSI.onCatalystInstanceDestroy();
+      } catch (error) {
+        hilog.info(0x0000, 'WatermelonDBBridge', `JSI destroy failed: ${error}`);
+      }
+    }
   }
 
   onCatalystInstanceDestroy(): void {
     
     console.log('watermelondbConsoleLogger onCatalystInstanceDestroy:');
-    // this.invalidate();
+    this.invalidate();
   }
 
   private async withDriver<T>(tag: number, fnName: string, fn: ParamFunction<T>): Promise<T> {
-    // const connection = this.connections.get(tag);
-    // if (!connection) {
-    //   throw new Error(`No driver with tag ${tag} available`);
-    // }
-    // if (connection.type === 'connected') {
-    //   return fn(connection.driver);
-    // }
-    // return new Promise<T>((resolve, reject) => {
-    //   const queueFn = () =>
-    //     this.withDriver(tag, fnName, fn)
-    //       .then(resolve)
-    //       .catch(reject);
-    //   const waitingQueue = connection.queue.concat(queueFn);
-    //   this.connections.set(tag, { type: 'waiting', queue: waitingQueue });
-    // });
     console.log('watermelondbConsoleLogger withDriver:');
-    return null as unknown as T;
+    const connection = this.connections.get(tag);
+    if (!connection) {
+      throw new Error(`No driver with tag ${tag} available`);
+    }
+    if (connection.type === 'connected') {
+      return fn(connection.driver);
+    }
+    return new Promise<T>((resolve, reject) => {
+      const queueFn = () =>
+        this.withDriver(tag, fnName, fn)
+          .then(resolve)
+          .catch(reject);
+      const waitingQueue = connection.queue.concat(queueFn);
+      this.connections.set(tag, { type: 'waiting', queue: waitingQueue });
+    });
   }
 
   private async connectDriver(tag: number, driver: WMDatabaseDriver): Promise<void> {
-    // const queue = this.getQueue(tag);
-    // this.connections.set(tag, { type: 'connected', driver });
-    // queue.forEach((operation) => operation());
     console.log('watermelondbConsoleLogger connectDriver:');
+    const queue = this.getQueue(tag);
+    this.connections.set(tag, { type: 'connected', driver });
+    queue.forEach((operation) => operation());
   }
 
   private getQueue(tag: number): Array<() => void> {
     console.log('watermelondbConsoleLogger getQueue:');
-    // const connection = this.connections.get(tag);
-    // if (!connection) {
-    //   return [];
-    // }
-    // if (connection.type === 'waiting') {
-    //   return connection.queue;
-    // }
-    // return [];
+    const connection = this.connections.get(tag);
+    if (!connection) {
+      return [];
+    }
+    if (connection.type === 'waiting') {
+      return connection.queue;
+    }
     return [];
   }
 
   private createDriverContext(databaseName: string, unsafeNativeReuse: boolean): DriverContext {
     console.log('watermelondbConsoleLogger createDriverContext:');
-    // const abilityContext = this.ctx.uiAbilityContext as common.Context;
-    // return {
-    //   context: abilityContext,
-    //   databaseName,
-    //   unsafeNativeReuse,
-    // };
+    const abilityContext = this.ctx.uiAbilityContext as common.Context;
     return {
-      context: null,
+      context: abilityContext,
       databaseName,
       unsafeNativeReuse,
     };

@@ -5,8 +5,8 @@ import {
   Q,
   Query,
   Relation,
-} from '@react-native-ohos/watermelondb/src';
-import SQLiteAdapter from '@react-native-ohos/watermelondb/src/adapters/sqlite';
+} from '@react-native-ohos/watermelondb';
+import SQLiteAdapter from '@react-native-ohos/watermelondb/adapters/sqlite';
 import { Blog, Post } from './model';
 import { TableName } from './constants';
 

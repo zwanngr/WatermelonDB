@@ -19,8 +19,8 @@ const config = {
   //   resolveRequest: (context, moduleName, platform) => {
   //     // 处理 @react-native-ohos/watermelondb 的子路径导入
   //     // 当使用 file:../ 时，需要映射到项目根目录的 src 目录
-  //     if (moduleName.startsWith('@react-native-ohos/watermelondb/src/')) {
-  //       const subPath = moduleName.replace('@react-native-ohos/watermelondb/src/', '');
+  //     if (moduleName.startsWith('@react-native-ohos/watermelondb/')) {
+  //       const subPath = moduleName.replace('@react-native-ohos/watermelondb/', '');
   //       // 映射到项目根目录（examples 的上一级）的 src 目录
   //       const watermelonPath = path.resolve(__dirname, '../src');
   //       const resolvedPath = path.resolve(watermelonPath, subPath);

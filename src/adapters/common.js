@@ -60,6 +60,11 @@ export function sanitizeQueryResult(
   dirtyRecords: DirtyQueryResult,
   tableSchema: TableSchema,
 ): CachedQueryResult {
+  // Handle null/undefined results from native code (e.g., when query fails)
+  // Native code may return null instead of empty array in error cases
+  if (!dirtyRecords || !Array.isArray(dirtyRecords)) {
+    return []
+  }
   return dirtyRecords.map((dirtyRecord) =>
     typeof dirtyRecord === 'string' ? dirtyRecord : sanitizedRaw(dirtyRecord, tableSchema),
   )

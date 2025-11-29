@@ -1,8 +1,8 @@
 // tslint:disable: max-classes-per-file
-import { Database } from '@react-native-ohos/watermelondb/src'
-import { setGenerator } from '@react-native-ohos/watermelondb/src/utils/common/randomId'
-import SQLiteAdapter from "@react-native-ohos/watermelondb/src/adapters/sqlite"
-import { SyncDatabaseChangeSet, synchronize } from "@react-native-ohos/watermelondb/src/sync"
+import { Database } from '@react-native-ohos/watermelondb'
+import { setGenerator } from '@react-native-ohos/watermelondb/utils/common/randomId'
+import SQLiteAdapter from "@react-native-ohos/watermelondb/adapters/sqlite"
+import { SyncDatabaseChangeSet, synchronize } from "@react-native-ohos/watermelondb/sync"
 import { AppSchema } from "./AppSchema"
 import { Blog, Post } from "./model"
 // import './__typetests__'
@@ -25,6 +25,7 @@ setGenerator(() => 'RANDOM STRING')
 const adapter = new SQLiteAdapter({
   dbName: "WatermelonDemo",
   schema: AppSchema,
+  jsi: false,
   onSetUpError: (error) => { 
     console.log('%c onSetUpError error:', 'color: #0e93e0;background: #aaefe5;', error);
   },

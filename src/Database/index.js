@@ -52,6 +52,10 @@ export default class Database {
 
   _localStorage: LocalStorage
 
+  // Internal identifier to check if an object is a WatermelonDB Database instance
+  // This avoids instanceof checks that may fail due to module resolution differences
+  _isWatermelonDBDatabase: true = true
+
   constructor(options: DatabaseProps): void {
     const { adapter, modelClasses } = options
     if (process.env.NODE_ENV !== 'production') {
@@ -162,10 +166,10 @@ export default class Database {
           switch (type) {
             case 'create':
             case 'update':
-              return `${type} ${table}#${(rawOrId: any).id}`
+              return `${type} ${table}#${(rawOrId).id}`
             case 'markAsDeleted':
             case 'destroyPermanently':
-              return `${type} ${table}#${(rawOrId: any)}`
+              return `${type} ${table}#${(rawOrId)}`
             default:
               return `${type}???`
           }

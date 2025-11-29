@@ -1,5 +1,5 @@
-import { Model } from "@react-native-ohos/watermelondb";
-import { field, relation } from "@react-native-ohos/watermelondb/decorators";
+import { Model } from "@nozbe/watermelondb";
+import { field, relation } from "@nozbe/watermelondb/src/decorators";
 
 export default class Review extends Model {
   static table = "reviews";

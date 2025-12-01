@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Database} from '@react-native-ohos/watermelondb'; // 使用命名导入时 instanceof 检查可能失败
+import { Database } from '@react-native-ohos/watermelondb';
 import SQLiteAdapter from '@react-native-ohos/watermelondb/adapters/sqlite';
 import { DatabaseProvider, useDatabase } from '@react-native-ohos/watermelondb/react';
 import { mySchema } from './models/schema';
@@ -104,23 +104,23 @@ const MovieCard = ({ movie, onAddReview, onRename, onDelete }) => {
     return () => subscription.unsubscribe();
   }, [movie]);
 
-  // 订阅 movie 对象的变化，以便在更新时刷新 UI
-  useEffect(() => {
-    const subscription = movie.observe().subscribe({
-      next: (updatedMovie) => {
-        const newInfo = updatedMovie.getMovie();
-        console.log('%c watermelondbConsoleLogger movie card updated:', 'color: #0e93e0;background: #aaefe5;', {
-          id: updatedMovie.id,
-          newTitle: newInfo.title,
-        });
-        setMovieInfo(newInfo);
-      },
-      error: (error) => console.warn('订阅电影变化失败', error),
-    });
-    return () => subscription.unsubscribe();
-  }, [movie]);
-
-  const info = movieInfo;
+    // 订阅 movie 对象的变化，以便在更新时刷新 UI
+    useEffect(() => {
+      const subscription = movie.observe().subscribe({
+        next: (updatedMovie) => {
+          const newInfo = updatedMovie.getMovie();
+          console.log('%c watermelondbConsoleLogger movie card updated:', 'color: #0e93e0;background: #aaefe5;', {
+            id: updatedMovie.id,
+            newTitle: newInfo.title,
+          });
+          setMovieInfo(newInfo);
+        },
+        error: (error) => console.warn('订阅电影变化失败', error),
+      });
+      return () => subscription.unsubscribe();
+    }, [movie]);
+  
+    const info = movieInfo;
 
   return (
     <View style={styles.card}>
@@ -177,7 +177,6 @@ const MovieScreen = () => {
       'color: #0e93e0;background: #aaefe5;',
       moviesCollection,
     );
-    console.log('%c watermelondbConsoleLogger moviesCollection.query:', 'color: #0e93e0;background: #aaefe5;', moviesCollection.query());
     const current = await moviesCollection.query().fetch();
     console.log(
       '%c watermelondbConsoleLogger current:',
@@ -298,7 +297,7 @@ const MovieScreen = () => {
 };
 
 export default function WatermelonDemo() {
-  console.log('%c watermelondbConsoleLogger database:', 'color: #0e93e0;background: #aaefe5;', database);
+  console.log('%c watermelondbConsoleLogger WatermelonDemo:', 'color: #0e93e0;background: #aaefe5;', 'WatermelonDemo');
   return (
     <DatabaseProvider database={database}>
       <MovieScreen />

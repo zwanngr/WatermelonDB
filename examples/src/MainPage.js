@@ -6,6 +6,8 @@ import WatermelonDBSimpleBase from './WaterDatabase';
 import LocalStorageTest from './WaterLocalStorage'; 
 import CollectionMapTestPage from './WatermelonDBCollectionMap'; 
 import WatermelonRelaDemo from './WatermelonDBSimple'; 
+import WatermelonDBSimplejsiTure from './WatermelonDBSimplejsiTure'; 
+
 
 // 主入口组件
 export default function MainPage() {
@@ -27,10 +29,13 @@ export default function MainPage() {
         return <LocalStorageTest />;
       case 'realtion':
         return <WatermelonRelaDemo />;
+      case 'jsiTure':
+        return <WatermelonDBSimplejsiTure />;
       default: // home
         return (
           <View style={styles.container}>
             <Text style={styles.title}>watermelon测试页面入口</Text>
+            <Text style={styles.titleMini}>JSI: false</Text>
             <Button
               title="进入Query测试页面"
               onPress={() => setCurrentScreen('query')}
@@ -59,6 +64,11 @@ export default function MainPage() {
             <Button
               title="进入Relation测试页面"
               onPress={() => setCurrentScreen('realtion')}
+              style={styles.button}
+            />
+            <Button
+              title="进入jsiTure测试页面"
+              onPress={() => setCurrentScreen('jsiTure')}
               style={styles.button}
             />
           </View>
